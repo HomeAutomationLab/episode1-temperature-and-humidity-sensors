@@ -1,4 +1,4 @@
-# Home Automation Lab
+# Home Automation Lab Episode 1: Temperature and Humidity Sensors
 
 These are the show notes for the inaugural video of Home Automation Lab! I review two Zigbee temperature and humidity sensors and show off two ways you can use them in Home Assistant.
 
@@ -106,26 +106,26 @@ When creating the automation itself, you can reference these screenshots or use 
   conditions: []
   actions:
   - choose:
-	  - conditions:
-		  - condition: numeric_state
-			entity_id: sensor.haozee_temperature_humidity_sensor_humidity
-			above: input_number.target_humidity
-		sequence:
-		  - action: switch.turn_on
-			metadata: {}
-			data: {}
-			target:
-			  entity_id: switch.socket_3
-	  - conditions:
-		  - condition: numeric_state
-			entity_id: sensor.haozee_temperature_humidity_sensor_humidity
-			below: input_number.target_humidity
-		sequence:
-		  - action: switch.turn_off
-			metadata: {}
-			data: {}
-			target:
-			  entity_id: switch.socket_3
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.haozee_temperature_humidity_sensor_humidity
+            above: input_number.target_humidity
+        sequence:
+          - action: switch.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: switch.socket_3
+      - conditions:
+          - condition: numeric_state
+            entity_id: sensor.haozee_temperature_humidity_sensor_humidity
+            below: input_number.target_humidity
+        sequence:
+          - action: switch.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: switch.socket_3
   mode: single
 ```
 
