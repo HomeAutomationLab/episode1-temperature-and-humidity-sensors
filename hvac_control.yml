@@ -1,0 +1,62 @@
+input_number:
+  - id: hvac_upper_range
+    min: 0.0
+    max: 100.0
+    name: HVAC Upper Range
+    mode: box
+    unit_of_measurement: F
+    step: 1.0
+    
+  - id: hvac_lower_range
+    min: 0.0
+    max: 100.0
+    name: HVAC Lower Range
+    mode: box
+    unit_of_measurement: F
+    step: 1.0
+
+automation:
+  - alias: Climate Control using Median Temperature
+    description: ''
+    triggers:
+    - trigger: numeric_state
+      entity_id:
+      - sensor.median_temperature
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+      above: input_number.hvac_upper_range
+      below: input_number.hvac_lower_range
+    conditions: []
+    actions:
+    - choose:
+      - conditions:
+        - condition: numeric_state
+          entity_id: sensor.median_temperature
+          above: input_number.hvac_upper_range
+        sequence:
+        - action: climate.set_temperature
+          target:
+            # Set to your thermostat's entity ID
+            entity_id: climate.thermostat
+          data:
+            # UPPER RANGE TEMPERATURE TEMPLATE
+            # Change sensor.thermostat_temperature with your temperature sensor entity ID
+            temperature: >-
+              {{ states('sensor.thermostat_temperature') | int - (states('input_number.hvac_upper_range') | int - states('sensor.thermostat_temperature') | int ) }}
+      - conditions:
+        - condition: numeric_state
+          entity_id: sensor.median_temperature
+          below: input_number.hvac_lower_range
+        sequence:
+        - action: climate.set_temperature
+          target:
+            # Set to your thermostat's entity ID
+            entity_id: climate.thermostat
+          data:
+            # LOWER RANGE TEMPERATURE TEMPLATE
+            # Change sensor.thermostat_temperature with your temperature sensor entity ID
+            temperature: >-
+              {{ states('sensor.thermostat_temperature') | int + ( states('sensor.thermostat_temperature') | int ) - states('input_number.hvac_lower_range') | int }}
+    mode: single

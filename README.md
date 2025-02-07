@@ -1,10 +1,8 @@
-# Home Automation Lab Episode 1: Temperature and Humidity Sensors
+# Episode 1: Temperature and Humidity Sensors
 
 These are the show notes for the inaugural video of Home Automation Lab! I review two Zigbee temperature and humidity sensors and show off two ways you can use them in Home Assistant.
 
-[YouTube video link](https://youtu.be/9C3O-FpfVZY)
-
-## Links
+[<img src="https://raw.githubusercontent.com/HomeAutomationLab/global-assets/main/img/watch-on-youtube.png" style="height: 100px">](https://youtu.be/9C3O-FpfVZY)
 
 ### Product Links
 
@@ -17,63 +15,6 @@ These are the show notes for the inaugural video of Home Automation Lab! I revie
 ### Other Links
 
 * [Spreadsheet of raw data](https://u.loganbibby.com/haltemphumidsensordata)
-
-## Controlling climate in Home Assistant with the temperature sensor
-
-Using the temperature sensor data, I showed you how to create a combined sensor representing the median temperature and used it to automatically adjust the thermostat to be within a range in [this segment of the video](https://www.youtube.com/watch?v=9C3O-FpfVZY&t=400s).
-
-You'll need to create two helpers: one for the upper range and one for the lower range.
-
-![Upper range helper](./assets/hvaccontrol_helpers_hvacupperrange.png)
-
-![Lower range helper](./assets/hvaccontrol_helpers_hvaclowerrange.png)
-
-When creating the automation itself, you can reference these screenshots or use the YAML of the automation below.
-
-![Automation trigger](./assets/hvaccontrol_automation_trigger.png)
-
-![Automation actions](./assets/hvaccontrol_automation_actions.png)
-
-```yaml
-- alias: Climate Control using Median Temperature
-  description: ''
-  triggers:
-  - trigger: numeric_state
-    entity_id:
-    - sensor.median_temperature
-    for:
-      hours: 0
-      minutes: 5
-      seconds: 0
-    above: input_number.hvac_upper_range
-    below: input_number.hvac_lower_range
-  conditions: []
-  actions:
-  - choose:
-    - conditions:
-      - condition: numeric_state
-        entity_id: sensor.median_temperature
-        above: input_number.hvac_upper_range
-      sequence:
-      - action: climate.set_temperature
-        target:
-          entity_id: climate.thermostat
-        data:
-          temperature: {{ states('sensor.thermostat_temperature') | int - ( states('input_number.hvac_upper_range') | int - states('sensor.thermostat_temperature') | int ) }}
-    - conditions:
-      - condition: numeric_state
-        entity_id: sensor.median_temperature
-        below: input_number.hvac_lower_range
-      sequence:
-      - action: climate.set_temperature
-        target:
-          entity_id: climate.thermostat
-        data:
-          temperature: {{ states('sensor.thermostat_temperature') | int + ( states('sensor.thermostat_temperature') | int ) - states('input_number.hvac_lower_range') | int }}
-  mode: single
-```
-
-*You'll need to replace `sensor.thermostat_temperature` with your thermostat's temperature sensor and `climate.thermostat` with your thermostat's entity ID.*
 
 ## Controlling a bathroom exhaust fan with the humidity sensor
 
